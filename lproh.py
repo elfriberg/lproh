@@ -7,11 +7,12 @@ import numpy as np
 from prettytable import PrettyTable
 import time
 
-def read_complete_list(filename):
+def read_complete_list(filename, filename2):
     """
     Reads the same-folder textfile and returns array for check.
     """
     complete_list = []
+    old_list = []
     with open(filename, 'r') as f:
         #read_data = f.read()
         for line in f:
@@ -25,13 +26,27 @@ def read_complete_list(filename):
             data.append(words[2][1:])
             data.append(words[3][1:-1])
             complete_list.append(data)
-            
     f.closed
-    print 'complete list read'
-    return complete_list
+    print 'INFO: Aktuell LP-katalog lest inn.'
 
-def show_results(detected_old_books, detected_good_books):
-    print 'Found %s old books:' % len(detected_old_books)
+    with open(filename2, 'r') as f:
+        for line in f:
+            data = []
+            words = line.split(";");
+            add_isbn = ''.join(words[0].split())
+            data.append(add_isbn)
+            data.append(words[1][1:])
+            data.append(words[2][1:])
+            data.append(words[3][1:-1])
+            old_list.append(data)
+    f.closed
+    print 'INFO: Liste over utdaterte LP-titler lest inn.'
+
+    return complete_list, old_list
+
+def show_results(detected_old_books, detected_good_books, unknown_from_report):
+    print '\nTABELL 1\nFant %s utdaterte (erstattet av ny) LP-titler i din rapport:' % len(detected_old_books)
+    print '(Dette programmet baserer seg på old_list.txt; du bør også sjekke siste Tabell 3 der\ntitler i rapport uten treff i lister presenteres.)'
     t = PrettyTable(['ISBN', 'Navn', 'Innbinding', 'År', 'Salg totalt', 'Beholdning'])
     #print 'ISBN-13:\tNAVN:\t\t\tINNBINDING:\tÅR:\tSALG TOTALT:\tBEHOLDNING:'
     for b in detected_old_books:
@@ -40,7 +55,7 @@ def show_results(detected_old_books, detected_good_books):
     print t
     #print detected_old_books
 
-    print '\nFant %s aktuelle bøker fra LP-katalogen nevnt i din rapport:' % len(detected_good_books)
+    print '\nTABELL 2\nFant %s aktuelle bøker fra LP-katalogen nevnt i din rapport:' % len(detected_good_books)
     print '(Disse er sortert på beholdning (økende) slik at de øverste normalt er viktigst å bestille.)'
     t_good = PrettyTable(['ISBN', 'Navn', 'Innbinding', 'År', 'Salg totalt', 'Beholdning'])
     #print detected_good_books
@@ -50,6 +65,14 @@ def show_results(detected_old_books, detected_good_books):
         t_good.add_row([b[2], b[3], b[4], b[5], b[8], b[10]])
     t_good.sortby = 'Beholdning'
     print t_good
+
+    print '\nTABELL 3\nFant %s bøker i din rapport som programmet ikke finner i innlastede godkjent/forbudt-lister:' % len(unknown_from_report)
+    print '(Disse er typisk ikke-LP-titler og utdaterte LP-titler som gikk OUP før 2015-09.)'
+    t_unknown = PrettyTable(['ISBN', 'Navn', 'Innbinding', 'År', 'Salg totalt', 'Beholdning'])
+    for unknown in unknown_from_report:
+        t_unknown.add_row([unknown[2], unknown[3], unknown[4], unknown[5], unknown[8], unknown[10]])
+    t_unknown.sortby = 'Beholdning'
+    print t_unknown
 
 def show_not_found(A, np_complete_list):
     year, month = time.localtime()[0:2]
@@ -73,12 +96,12 @@ def show_not_found(A, np_complete_list):
             else:
                 t_notpublishedyet.add_row([np_complete_list[i][0], np_complete_list[i][1], np_complete_list[i][2], np_complete_list[i][3]])
                 cnt_notpublishedyet += 1
-    print '\nFant %s aktuelle bøker fra LP-katalogen som mangler i din rapport:' % cnt_missing
+    print '\nTABELL 4\nFant %s aktuelle bøker fra LP-katalogen som mangler i din rapport:' % cnt_missing
     print '(Du bør slå opp deres ISBN manuelt for å sjekke deres antall i beholdning, evt. generere en'
     print 'rapport som går lenger tilbake i tid. Du mangler trolig enkelte av disse titlene.)'
     t_missing.sortby = 'Publikasjonsdato'
     print t_missing
-    print '\nFant %s bøker fra LP-katalogen som ikke er publisert ennå [as of %s], og som mangler i din rapport:' % (cnt_notpublishedyet, year_month)
+    print '\nTABELL 5\nFant %s bøker fra LP-katalogen som ikke er publisert ennå [as of %s], og som mangler i din rapport:' % (cnt_notpublishedyet, year_month)
     print '(Du bør slå opp deres ISBN manuelt for å sjekke om du har bestilt disse.)'
     t_notpublishedyet.sortby = 'Publikasjonsdato'
     print t_notpublishedyet
@@ -139,6 +162,7 @@ if __name__ == "__main__":
     detected_old_books = []
     detected_good_books = []
     not_in_report = []
+    unknown_from_report = []
 
 
     wb = load_workbook(filename = args.infile, use_iterators=True)
@@ -162,8 +186,13 @@ if __name__ == "__main__":
     #print(sheet_ranges['A1'].value)
     #for i in xrange(
     
-    complete_list = read_complete_list('complete_list.txt')
+    complete_list, old_list = read_complete_list('complete_list.txt', 'old_list.txt')
     np_complete_list = np.array(complete_list)
+    #print old_list
+    np_old_list = np.array(old_list)
+    #print np_old_list
+    #print np_old_list[:,0]
+
     A = np.array([[i.value for i in j] for j in sheet['A3':'K305']])
 
     # fiks OBS
@@ -175,19 +204,22 @@ if __name__ == "__main__":
         #print type(book[2])
         #isOld(book[2],old_books)
         book[2] = int(book[2])
-        if book[2] in old_books:
-            detected_old_books.append(book)
-        #elif book[2] in permitted_lp_books:
-        elif book[2] in np_complete_list[:,0].astype(int):
+        #if book[2] in old_books:
+        if book[2] in np_complete_list[:,0].astype(int):
             # overwrites report-title with list-title, ok
             name_index = np.where(np_complete_list[:,0]==str(book[2]))
             name_index = name_index[-1][0]
             book[3] = np_complete_list[name_index][1]
             detected_good_books.append(book)
+        else:
+            if str(book[2]) in np_old_list[:,0]:
+                detected_old_books.append(book)
+            else:
+                unknown_from_report.append(book)
             
 
     #print detected_old_books
-    show_results(detected_old_books, detected_good_books)
+    show_results(detected_old_books, detected_good_books, unknown_from_report)
     show_not_found(A, np_complete_list)
 
     # show titles in complete list not in report
