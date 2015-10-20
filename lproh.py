@@ -6,11 +6,28 @@ import argparse
 import numpy as np
 from prettytable import PrettyTable
 
-def isOld(isbn, old_books):
-    #print isbn
-    for book in old_books:
-        if int(isbn) == book:
-            print 'old'
+def read_complete_list(filename):
+    """
+    Reads the same-folder textfile and returns array for check.
+    """
+    complete_list = []
+    with open(filename, 'r') as f:
+        #read_data = f.read()
+        for line in f:
+            data = []
+            #line = f.readline()
+            words = line.split(",");
+            #add_isbn = str(words[0][0:2]) + str(words[0][4]) + str(words[0][6:10]) + str(words[0][
+            add_isbn = ''.join(words[0].split())
+            data.append(add_isbn)
+            data.append(words[1][1:])
+            data.append(words[2][1:])
+            data.append(words[3][1:-1])
+            complete_list.append(data)
+            
+    f.closed
+    print 'complete list read'
+    return complete_list
 
 def show_results(detected_old_books, detected_good_books):
     print 'Found %s old books:' % len(detected_old_books)
@@ -107,7 +124,9 @@ if __name__ == "__main__":
     #    print line
     #print(sheet_ranges['A1'].value)
     #for i in xrange(
-
+    
+    complete_list = read_complete_list('complete_list.txt')
+    np_complete_list = np.array(complete_list)
     A = np.array([[i.value for i in j] for j in sheet['A3':'K305']])
     #print A.ndim
     #print type(A[0][0])
@@ -118,8 +137,19 @@ if __name__ == "__main__":
         book[2] = int(book[2])
         if book[2] in old_books:
             detected_old_books.append(book)
-        elif book[2] in permitted_lp_books:
+        #elif book[2] in permitted_lp_books:
+        if book[2] in np_complete_list[:,0].astype(int):
+            # overwrites report-title with list-title, ok
+            name_index = np.where(np_complete_list[:,0]==str(book[2]))
+            name_index = name_index[-1][0]
+            print 'ni:', name_index
+            print book[3]
+            book[3] = np_complete_list[name_index][1]
+            print book[3]
             detected_good_books.append(book)
 
     #print detected_old_books
     show_results(detected_old_books, detected_good_books)
+
+    
+    
