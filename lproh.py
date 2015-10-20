@@ -16,7 +16,7 @@ def read_complete_list(filename):
         for line in f:
             data = []
             #line = f.readline()
-            words = line.split(",");
+            words = line.split(";");
             #add_isbn = str(words[0][0:2]) + str(words[0][4]) + str(words[0][6:10]) + str(words[0][
             add_isbn = ''.join(words[0].split())
             data.append(add_isbn)
@@ -47,6 +47,24 @@ def show_results(detected_old_books, detected_good_books):
         #print '%s\t%s\t\t%s\t\t%s\t%s\t\t%s' % (b[2], b[3], b[4], b[5], b[8], b[10])
         t_good.add_row([b[2], b[3], b[4], b[5], b[8], b[10]])
     print t_good
+
+def show_not_found(A, np_complete_list):
+    cnt_missing = 0
+    t_missing = PrettyTable(['ISBN', 'Navn', 'Publikasjonsdato', 'Utgave'])
+    A_isbns = []
+    for book in A:
+        book[2] = int(book[2])
+        A_isbns.append(book[2])
+    #print np_complete_list
+    no_titles_complete = np_complete_list.shape[0]
+    #print no_titles_complete
+    for i in xrange(no_titles_complete):
+        if int(np_complete_list[i][0]) not in A_isbns:
+            t_missing.add_row([np_complete_list[i][0], np_complete_list[i][1], np_complete_list[i][2], np_complete_list[i][3]])
+            cnt_missing += 1
+    print '\nFound %s books from complete LP catalogue that are missing from the report:' % cnt_missing
+    print t_missing
+        
 
 def letter_to_index(letter):
     """Converts a column letter, e.g. "A", "B", "AA", "BC" etc. to a zero based
@@ -102,6 +120,7 @@ if __name__ == "__main__":
 
     detected_old_books = []
     detected_good_books = []
+    not_in_report = []
 
 
     wb = load_workbook(filename = args.infile, use_iterators=True)
@@ -128,6 +147,9 @@ if __name__ == "__main__":
     complete_list = read_complete_list('complete_list.txt')
     np_complete_list = np.array(complete_list)
     A = np.array([[i.value for i in j] for j in sheet['A3':'K305']])
+
+    # fiks OBS
+
     #print A.ndim
     #print type(A[0][0])
     #for row
@@ -138,18 +160,17 @@ if __name__ == "__main__":
         if book[2] in old_books:
             detected_old_books.append(book)
         #elif book[2] in permitted_lp_books:
-        if book[2] in np_complete_list[:,0].astype(int):
+        elif book[2] in np_complete_list[:,0].astype(int):
             # overwrites report-title with list-title, ok
             name_index = np.where(np_complete_list[:,0]==str(book[2]))
             name_index = name_index[-1][0]
-            print 'ni:', name_index
-            print book[3]
             book[3] = np_complete_list[name_index][1]
-            print book[3]
             detected_good_books.append(book)
+            
 
     #print detected_old_books
     show_results(detected_old_books, detected_good_books)
+    show_not_found(A, np_complete_list)
 
-    
+    # show titles in complete list not in report
     
