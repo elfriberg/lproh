@@ -4,6 +4,7 @@
 from openpyxl import load_workbook
 import argparse
 import numpy as np
+from prettytable import PrettyTable
 
 def isOld(isbn, old_books):
     #print isbn
@@ -13,15 +14,22 @@ def isOld(isbn, old_books):
 
 def show_results(detected_old_books, detected_good_books):
     print 'Found %s old books:' % len(detected_old_books)
-    print 'ISBN-13:\tNAVN:\t\t\tINNBINDING:\tÅR:\tSALG TOTALT:\tBEHOLDNING:'
+    t = PrettyTable(['ISBN', 'Navn', 'Innbinding', 'År', 'Salg totalt', 'Beholdning'])
+    #print 'ISBN-13:\tNAVN:\t\t\tINNBINDING:\tÅR:\tSALG TOTALT:\tBEHOLDNING:'
     for b in detected_old_books:
-        print '%s\t%s\t\t%s\t\t%s\t%s\t\t%s' % (b[2], b[3], b[4], b[5], b[8], b[10])
+        t.add_row([b[2], b[3], b[4], b[5], b[8], b[10]])
+        #print '%s\t%s\t\t%s\t\t%s\t%s\t\t%s' % (b[2], b[3], b[4], b[5], b[8], b[10])
+    print t
     #print detected_old_books
+
     print '\nFound %s good books:' % len(detected_good_books)
+    t_good = PrettyTable(['ISBN', 'Navn', 'Innbinding', 'År', 'Salg totalt', 'Beholdning'])
     #print detected_good_books
-    print 'ISBN-13:\tNAVN:\t\t\tINNBINDING:\tÅR:\tSALG TOTALT:\tBEHOLDNING:'
+    #print 'ISBN-13:\tNAVN:\t\t\tINNBINDING:\tÅR:\tSALG TOTALT:\tBEHOLDNING:'
     for b in detected_good_books:
-        print '%s\t%s\t\t%s\t\t%s\t%s\t\t%s' % (b[2], b[3], b[4], b[5], b[8], b[10])
+        #print '%s\t%s\t\t%s\t\t%s\t%s\t\t%s' % (b[2], b[3], b[4], b[5], b[8], b[10])
+        t_good.add_row([b[2], b[3], b[4], b[5], b[8], b[10]])
+    print t_good
 
 def letter_to_index(letter):
     """Converts a column letter, e.g. "A", "B", "AA", "BC" etc. to a zero based
@@ -101,7 +109,7 @@ if __name__ == "__main__":
     #for i in xrange(
 
     A = np.array([[i.value for i in j] for j in sheet['A3':'K305']])
-    print A.ndim
+    #print A.ndim
     #print type(A[0][0])
     #for row
     for book in A:
@@ -113,5 +121,5 @@ if __name__ == "__main__":
         elif book[2] in permitted_lp_books:
             detected_good_books.append(book)
 
-    print detected_old_books
+    #print detected_old_books
     show_results(detected_old_books, detected_good_books)
