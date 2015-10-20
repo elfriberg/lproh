@@ -3,6 +3,25 @@
 
 from openpyxl import load_workbook
 import argparse
+import numpy as np
+
+def isOld(isbn, old_books):
+    #print isbn
+    for book in old_books:
+        if int(isbn) == book:
+            print 'old'
+
+def show_results(detected_old_books, detected_good_books):
+    print 'Found %s old books:' % len(detected_old_books)
+    print 'ISBN-13:\tNAVN:\t\t\tINNBINDING:\tÅR:\tSALG TOTALT:\tBEHOLDNING:'
+    for b in detected_old_books:
+        print '%s\t%s\t\t%s\t\t%s\t%s\t\t%s' % (b[2], b[3], b[4], b[5], b[8], b[10])
+    #print detected_old_books
+    print '\nFound %s good books:' % len(detected_good_books)
+    #print detected_good_books
+    print 'ISBN-13:\tNAVN:\t\t\tINNBINDING:\tÅR:\tSALG TOTALT:\tBEHOLDNING:'
+    for b in detected_good_books:
+        print '%s\t%s\t\t%s\t\t%s\t%s\t\t%s' % (b[2], b[3], b[4], b[5], b[8], b[10])
 
 def letter_to_index(letter):
     """Converts a column letter, e.g. "A", "B", "AA", "BC" etc. to a zero based
@@ -53,6 +72,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
+    old_books = [9781741798227]
+    permitted_lp_books = [9781742200347]
+
+    detected_old_books = []
+    detected_good_books = []
+
+
     wb = load_workbook(filename = args.infile, use_iterators=True)
     sheet = wb.active
     #row_count = sheet.get_highest_row() - 1
@@ -61,10 +87,10 @@ if __name__ == "__main__":
     
     row_count = sheet.max_row
     column_count = sheet.max_column
-    print row_count, column_count
-    for i in xrange(3,row_count,1):
-        isbn = "C" + str(i)
-        print sheet[isbn].value
+    #print row_count, column_count
+    #for i in xrange(3,row_count,1):
+    #    isbn = "C" + str(i)
+    #    print sheet[isbn].value
     # In [11]: wb.get_sheet_names()
     # Out[11]: ['ARK_PCA_ANT_SOLGT_OG_BEH (97)']
     # can choose active or with this name
@@ -73,3 +99,19 @@ if __name__ == "__main__":
     #    print line
     #print(sheet_ranges['A1'].value)
     #for i in xrange(
+
+    A = np.array([[i.value for i in j] for j in sheet['A3':'K305']])
+    print A.ndim
+    #print type(A[0][0])
+    #for row
+    for book in A:
+        #print type(book[2])
+        #isOld(book[2],old_books)
+        book[2] = int(book[2])
+        if book[2] in old_books:
+            detected_old_books.append(book)
+        elif book[2] in permitted_lp_books:
+            detected_good_books.append(book)
+
+    print detected_old_books
+    show_results(detected_old_books, detected_good_books)
