@@ -5,6 +5,7 @@ from openpyxl import load_workbook
 import argparse
 import numpy as np
 from prettytable import PrettyTable
+import time
 
 def read_complete_list(filename):
     """
@@ -39,18 +40,24 @@ def show_results(detected_old_books, detected_good_books):
     print t
     #print detected_old_books
 
-    print '\nFound %s good books:' % len(detected_good_books)
+    print '\nFant %s aktuelle bøker fra LP-katalogen nevnt i din rapport:' % len(detected_good_books)
+    print '(Disse er sortert på beholdning (økende) slik at de øverste normalt er viktigst å bestille.)'
     t_good = PrettyTable(['ISBN', 'Navn', 'Innbinding', 'År', 'Salg totalt', 'Beholdning'])
     #print detected_good_books
     #print 'ISBN-13:\tNAVN:\t\t\tINNBINDING:\tÅR:\tSALG TOTALT:\tBEHOLDNING:'
     for b in detected_good_books:
         #print '%s\t%s\t\t%s\t\t%s\t%s\t\t%s' % (b[2], b[3], b[4], b[5], b[8], b[10])
         t_good.add_row([b[2], b[3], b[4], b[5], b[8], b[10]])
+    t_good.sortby = 'Beholdning'
     print t_good
 
 def show_not_found(A, np_complete_list):
+    year, month = time.localtime()[0:2]
+    year_month = str(year) + '-' + str(month)
     cnt_missing = 0
+    cnt_notpublishedyet = 0
     t_missing = PrettyTable(['ISBN', 'Navn', 'Publikasjonsdato', 'Utgave'])
+    t_notpublishedyet = PrettyTable(['ISBN', 'Navn', 'Publikasjonsdato', 'Utgave'])
     A_isbns = []
     for book in A:
         book[2] = int(book[2])
@@ -60,10 +67,21 @@ def show_not_found(A, np_complete_list):
     #print no_titles_complete
     for i in xrange(no_titles_complete):
         if int(np_complete_list[i][0]) not in A_isbns:
-            t_missing.add_row([np_complete_list[i][0], np_complete_list[i][1], np_complete_list[i][2], np_complete_list[i][3]])
-            cnt_missing += 1
-    print '\nFound %s books from complete LP catalogue that are missing from the report:' % cnt_missing
+            if year_month >= str(np_complete_list[i][2]):
+                t_missing.add_row([np_complete_list[i][0], np_complete_list[i][1], np_complete_list[i][2], np_complete_list[i][3]])
+                cnt_missing += 1
+            else:
+                t_notpublishedyet.add_row([np_complete_list[i][0], np_complete_list[i][1], np_complete_list[i][2], np_complete_list[i][3]])
+                cnt_notpublishedyet += 1
+    print '\nFant %s aktuelle bøker fra LP-katalogen som mangler i din rapport:' % cnt_missing
+    print '(Du bør slå opp deres ISBN manuelt for å sjekke deres antall i beholdning, evt. generere en'
+    print 'rapport som går lenger tilbake i tid. Du mangler trolig enkelte av disse titlene.)'
+    t_missing.sortby = 'Publikasjonsdato'
     print t_missing
+    print '\nFant %s bøker fra LP-katalogen som ikke er publisert ennå [as of %s], og som mangler i din rapport:' % (cnt_notpublishedyet, year_month)
+    print '(Du bør slå opp deres ISBN manuelt for å sjekke om du har bestilt disse.)'
+    t_notpublishedyet.sortby = 'Publikasjonsdato'
+    print t_notpublishedyet
         
 
 def letter_to_index(letter):

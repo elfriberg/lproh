@@ -303,3 +303,67 @@
 978 1 74179 406 9; Yosemite, Sequoia & Kings Canyon National Parks; 2012-02; 3rd
 978 1 74179 722 0; Zambia, Mozambique & Malawi; 2013-06; 2nd
 978 1 74104 574 1; Zion & Bryce Canyon National Parks; 2011-02; 2nd
+978 1 74104 227 6; Africa Phrasebook & Dictionary; 2013-07; 2nd
+978 1 74104 014 2; Baltic Phrasebook & Dictionary; 2013-09; 3rd
+978 1 74321 181 6; Brazilian Portuguese Phrasebook & Dictionary; 2014-01; 5th
+978 1 74179 331 4; Bulgarian Phrasebook & Dictionary; 2014-04; 2nd
+978 1 74321 433 6; Burmese Phrasebook & Dictionary; 2014-10; 5th
+978 1 74220 183 2; Cantonese Phrasebook & Dictionary; 2013-07; 6th
+978 1 74059 114 0; Central Asia Phrasebook & Dictionary; 2008-07; 2nd
+978 1 74179 004 7; Central Europe Phrasebook & Dictionary; 2013-02; 4th
+978 1 74321 434 3; China Phrasebook & Dictionary; 2015-09; 2nd
+978 1 74321 438 1; Costa Rican Spanish Phrasebook & Dictionary; 2013-10; 4th
+978 1 74321 437 4; Croatian Phrasebook & Dictionary; 2015-03; 3rd
+978 1 74104 972 5; Czech Phrasebook & Dictionary; 2013-03; 3rd
+978 1 74179 274 4; Dutch Phrasebook & Dictionary; 2013-09; 2nd
+978 1 74321 182 3; East Timor Phrasebook & Dictionary; 2015-01; 3rd
+978 1 74179 005 4; Eastern Europe Phrasebook & Dictionary; 2013-02; 5th
+978 1 74179 133 4; Egyptian Arabic Phrasebook & Dictionary; 2014-05; 4th
+978 1 74059 645 9; Ethiopian Amharic Phrasebook & Dictionary; 2008-09; 3rd
+978 1 74321 435 0; Europe Phrasebook & Dictionary; 2015-09; 5th
+978 1 74179 134 1; Farsi (Persian) Phrasebook & Dictionary; 2014-11; 3rd
+978 1 74321 187 8; Fijian Phrasebook & Dictionary; 2014-07; 3rd
+978 1 74321 194 6; Filipino (Tagalog) Phrasebook & Dictionary; 2014-08; 5th
+978 1 74321 444 2; French Phrasebook & Dictionary; 2015-03; 6th
+978 1 74360 369 7; French Phrasebook & Audio CD; 2015-10; 3rd
+978 1 74321 443 5; German Phrasebook & Dictionary; 2015-03; 6th
+978 1 74220 988 3; Greek Phrasebook & Dictionary; 2013-03; 5th
+978 1 74179 138 9; Hebrew Phrasebook & Dictionary; 2013-03; 3rd
+978 1 74059 148 5; Hill Tribes Phrasebook & Dictionary; 2008-07; 3rd
+978 1 74220 306 5; Hindi, Urdu & Bengali Phrasebook & Dictionary; 2011-09; 4th
+978 1 74104 551 2; Hungarian Phrasebook & Dictionary; 2012-09; 2nd
+978 1 74179 480 9; India Phrasebook & Dictionary; 2014-09; 2nd
+978 1 74104 772 1; Indonesian Phrasebook & Dictionary; 2012-09; 6th
+978 1 74321 441 1; Italian Phrasebook & Dictionary; 2015-03; 6th
+978 1 74360 370 3; Italian Phrasebook & Audio CD; 2015-10; 3rd
+978 1 74321 440 4; Japanese Phrasebook & Dictionary; 2015-03; 7th
+978 1 74360 373 4; Japanese Phrasebook & Audio CD; 2015-10; 3rd
+978 1 74179 335 2; Korean Phrasebook & Dictionary; 2012-05; 5th
+978 1 74179 336 9; Lao Phrasebook & Dictionary; 2014-03; 4th
+978 1 74321 447 3; Latin American Spanish Phrasebook & Dictionary; 2015-05; 7th
+978 1 74179 337 6; Malay Phrasebook & Dictionary; 2014-03; 4th
+978 1 74321 607 1; Mandarin Phrasebook & Dictionary; 2015-10; 9th
+978 1 74360 372 7; Mandarin Phrasebook & Audio CD; 2015-10; 3rd
+978 1 74179 006 1; Mediterranean Europe Phrasebook & Dictionary; 2013-02; 3rd
+978 1 74220 188 7; Mexican Spanish Phrasebook & Dictionary; 2012-05; 3rd
+978 1 74179 139 6; Middle East Phrasebook & Dictionary; 2013-09; 2nd
+978 1 74321 184 7; Mongolian Phrasebook & Dictionary; 2014-03; 3rd
+978 1 74179 137 2; Moroccan Arabic Phrasebook & Dictionary; 2014-01; 4th
+978 1 74321 190 8; Nepali Phrasebook & Dictionary; 2014-09; 6th
+978 1 74321 189 2; Pidgin Phrasebook & Dictionary; 2015-03; 4th
+978 1 74179 007 8; Polish Phrasebook & Dictionary; 2013-03; 3rd
+978 1 74104 740 0; Portuguese Phrasebook & Dictionary; 2012-05; 3rd
+978 1 74321 191 5; Quechua Phrasebook & Dictionary; 2014-10; 4th
+978 1 74220 189 4; Russian Phrasebook & Dictionary; 2012-05; 6th
+978 1 74321 192 2; Sinhala (Sri Lanka) Phrasebook & Dictionary; 2014-07; 4th
+978 1 74104 166 8; South Pacific Phrasebook & Dictionary; 2008-07; 2nd
+978 1 74321 019 2; Southeast Asia Phrasebook & Dictionary; 2013-09; 3rd
+978 1 74321 442 8; Spanish Phrasebook & Dictionary; 2015-03; 6th
+978 1 74360 371 0; Spanish Phrasebook & Audio CD; 2015-10; 3rd
+978 1 74321 196 0; Swahili Phrasebook & Dictionary; 2014-08; 5th
+978 1 74321 452 7; Thai Phrasebook & Dictionary; 2015-09; 8th
+978 1 74321 183 0; Tibetan Phrasebook & Dictionary; 2014-02; 5th
+978 1 74321 195 3; Turkish Phrasebook & Dictionary; 2014-08; 5th
+978 1 74321 185 4; Ukrainian Phrasebook & Dictionary; 2014-04; 4th
+978 1 74321 436 7; Vietnamese Phrasebook & Dictionary; 2013-09; 6th
+978 1 74179 011 5; Western Europe Phrasebook & Dictionary; 2013-02; 5th
