@@ -74,6 +74,9 @@ def show_results(detected_old_books, detected_good_books, unknown_from_report):
     t_unknown.sortby = 'Beholdning'
     print t_unknown
 
+    qa_number = len(detected_old_books) + len(detected_good_books) + len(unknown_from_report)
+    return qa_number
+
 def show_not_found(A, np_complete_list):
     year, month = time.localtime()[0:2]
     year_month = str(year) + '-' + str(month)
@@ -193,7 +196,10 @@ if __name__ == "__main__":
     #print np_old_list
     #print np_old_list[:,0]
 
-    A = np.array([[i.value for i in j] for j in sheet['A3':'K305']])
+    upperleftcell = 'A3'
+    lowerrightcell = 'K' + str(row_count-2)
+    #A = np.array([[i.value for i in j] for j in sheet['A3':'K305']])
+    A = np.array([[i.value for i in j] for j in sheet[upperleftcell:lowerrightcell]])
 
     # fiks OBS
 
@@ -219,8 +225,13 @@ if __name__ == "__main__":
             
 
     #print detected_old_books
-    show_results(detected_old_books, detected_good_books, unknown_from_report)
+    qa_number = show_results(detected_old_books, detected_good_books, unknown_from_report)
     show_not_found(A, np_complete_list)
+
+    if int(qa_number) == int(row_count - 4):
+        print 'INFO: Alle %s titler i din rapport ble klassifisert og plassert i en tabell.' % str(row_count-4)
+    else:
+        print 'ERROR: Bare %s titler fra din rapport ble klassifisert og plassert i en tabell,\n men rapporten inneholder %s titler! Kontakt utvikleren på even@evenezer.me og legg med rapport og utskrift!' % (qa_number, (row_count - 4))
 
     # show titles in complete list not in report
     

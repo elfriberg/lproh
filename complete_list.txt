@@ -195,7 +195,7 @@
 978 1 74179 699 5; Nicaragua; 2013-09; 3rd
 978 1 74220 731 5; Northern California; 2015-03; 2nd
 978 1 74220 207 5; Norway; 2015-05; 6th
-978 1 74220 294 5; Nova Scotia, New Brunswick & Prince Edward Island; 2014-04; 	3rd
+978 1 74220 294 5; Nova Scotia, New Brunswick & Prince Edward Island; 2014-04; 3rd
 978 1 74220 009 5; Oman, UAE & the Arabian Peninsula; 2013-09; 4th
 978 1 74360 511 0; Pocket Orlando & Walt Disney World® Resort; 2015-03; 1st
 978 1 74220 012 5; Panama; 2013-09; 6th
