@@ -11,9 +11,20 @@ import os.path
 import sys
 import datetime
 
+__author__ = "Even Langfeldt Friberg"
+__copyright__ = "Copyright 2015, Lonely Planet Report Order Helper"
+__license__ = "GPL"
+__version__ = "1.0"
+__maintainer__ = "Even Langfeldt Friberg"
+__email__ = "even@evenezer.me"
+__status__ = "Production"
 
 def download_lists():
-
+    """
+    Downloads current LP complete stock list and incomplete LP outdated
+    stocks lists from authors' website. They are used to compare against
+    stock found in imported xlsx report.
+    """
     try:
         url = "http://folk.uio.no/evenlf/lp-lists/complete_list.txt"
         file_name = url.split('/')[-1]
@@ -120,7 +131,7 @@ def download_lists():
 
 def read_complete_list(filename, filename2):
     """
-    Reads the same-folder textfile and returns array for check.
+    Reads the (downloaded) same-folder stock lists.
     """
     complete_list = []
     old_list = []
@@ -156,6 +167,10 @@ def read_complete_list(filename, filename2):
 
 
 def show_results(detected_old_books, detected_good_books, unknown_from_report):
+    """
+    Prints to stdout outdated titles, current titles and unknown titles found in report.
+    """
+
     print '\nTABELL 1\nFant %s utdaterte (erstattet av ny) LP-titler i din rapport:' % len(
         detected_old_books)
     print '(Dette programmet baserer seg på old_list.txt; du bør også sjekke siste Tabell 3 der\ntitler i rapport uten treff i lister presenteres.)'
@@ -192,6 +207,10 @@ def show_results(detected_old_books, detected_good_books, unknown_from_report):
 
 
 def show_not_found(A, np_complete_list):
+    """
+    Prints to stdout titles from current list and not-yet-published titles not found in report.
+    """
+
     year, month = time.localtime()[0:2]
     year_month = str(year) + '-' + str(month)
     cnt_missing = 0
@@ -247,7 +266,6 @@ if __name__ == "__main__":
 
     old_books = [9781741798227]
     permitted_lp_books = [9781742200347]
-
     detected_old_books = []
     detected_good_books = []
     not_in_report = []
