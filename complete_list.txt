@@ -235,7 +235,7 @@
 978 1 74220 992 0; Scotland’s Highlands & Islands; 2015-02; 3rd
 978 1 74220 136 8; Seattle; 2014-02; 6th
 978 1 74321 002 4; Seoul; 2016-01; 8th
-978 1 74360 677 3; Pocket Seoul; 2016-01; 1st;
+978 1 74360 677 3; Pocket Seoul; 2016-01; 1st
 978 1 74321 571 5; Shanghai; 2015-04; 7th
 978 1 74179 963 7; Pocket Shanghai; 2013-04; 3rd
 978 1 74220 048 4; Sicily; 2014-01; 6th
