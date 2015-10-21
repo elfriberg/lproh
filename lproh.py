@@ -6,6 +6,108 @@ import argparse
 import numpy as np
 from prettytable import PrettyTable
 import time
+import urllib2
+import os.path
+import sys
+import datetime
+
+def download_lists():
+    
+    try:
+        url = "http://folk.uio.no/evenlf/lp-lists/complete_list.txt"
+        file_name = url.split('/')[-1]
+        u = urllib2.urlopen(url)
+        f = open(file_name, 'wb')
+        meta = u.info()
+        file_size = int(meta.getheaders("Content-Length")[0])
+        print "Laster ned: %s byte: %s" % (file_name, file_size)
+
+        file_size_dl = 0
+        block_sz = 8192
+        while True:
+            buffer = u.read(block_sz)
+            if not buffer:
+                break
+
+            file_size_dl += len(buffer)
+            f.write(buffer)
+            status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
+            status = status + chr(8)*(len(status)+1)
+            print status,
+        f.close()
+    except urllib2.HTTPError, err:
+        if err.code == 404:
+            print 'FEIL: Filen %s ble ikke funnet. Error 404: Listen kan ha blitt flyttet, eller siden er nede.' % url
+            if os.path.isfile('complete_list.txt'):
+                try:
+                    mtime = os.path.getmtime('complete_list.txt')
+                except OSError:
+                    mtime = 0
+                last_modified_date = datetime.datetime.fromtimestamp(mtime)
+                print 'VELG: Hvis du vil fortsette med gammel liste, trykk g etterfulgt av ENTER på tastaturet -- alt annet avslutter.'
+                print 'INFO: Gammel liste ble sist endret %s' % last_modified_date
+                while True:
+                    choice = raw_input("> ")
+
+                    if choice == 'g' :
+                        print "Bruker gammel liste."
+                        break
+                    else:
+                        print 'Avslutter.'
+                        sys.exit(1)
+            else:
+                print 'INFO: Filen complete-list.txt eksisterer ikke i programmets mappe. Avslutter.'
+                sys.exit(1)
+        else:
+            raise
+
+    try:
+        url = "http://folk.uio.no/evenlf/lp-lists/old_list.txt"
+        file_name = url.split('/')[-1]
+        u = urllib2.urlopen(url)
+        f = open(file_name, 'wb')
+        meta = u.info()
+        file_size = int(meta.getheaders("Content-Length")[0])
+        print "Laster ned: %s byte: %s\n" % (file_name, file_size)
+
+        file_size_dl = 0
+        block_sz = 8192
+        while True:
+            buffer = u.read(block_sz)
+            if not buffer:
+                break
+
+            file_size_dl += len(buffer)
+            f.write(buffer)
+            status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
+            status = status + chr(8)*(len(status)+1)
+            print status,
+            f.close()
+    except urllib2.HTTPError, err:
+        if err.code == 404:
+            print 'FEIL: Filen %s ble ikke funnet. Error 404: Listen kan ha blitt flyttet, eller siden er nede.' % url
+            if os.path.isfile('old_list.txt'):
+                try:
+                    mtime = os.path.getmtime('old_list.txt')
+                except OSError:
+                    mtime = 0
+                last_modified_date = datetime.datetime.fromtimestamp(mtime)
+                print 'VELG: Hvis du vil fortsette med gammel liste, trykk g etterfulgt av ENTER på tastaturet -- alt annet avslutter.'
+                print 'INFO: Gammel liste ble sist endret %s' % last_modified_date
+                while True:
+                    choice = raw_input("> ")
+
+                    if choice == 'g' :
+                        print "Bruker gammel liste."
+                        break
+                    else:
+                        print 'Avslutter.'
+                        sys.exit(1)
+            else:
+                print 'INFO: Filen old_list.txt eksisterer ikke i programmets mappe. Avslutter.'
+                sys.exit(1)
+        else:
+            raise
 
 def read_complete_list(filename, filename2):
     """
@@ -189,6 +291,8 @@ if __name__ == "__main__":
     #print(sheet_ranges['A1'].value)
     #for i in xrange(
     
+
+    download_lists()
     complete_list, old_list = read_complete_list('complete_list.txt', 'old_list.txt')
     np_complete_list = np.array(complete_list)
     #print old_list
