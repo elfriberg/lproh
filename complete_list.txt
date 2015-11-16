@@ -6,6 +6,7 @@
 978 1 74360 936 1; Make My Day Amsterdam; 2015-09; 1st
 978 1 74220 054 5; Pocket Amsterdam; 2013-03; 3rd
 978 1 74321 387 2; Andalucía; 2016-01; 8th
+978 1 74179 848 7; Andalucía; 2013-01; 7th
 978 1 74179 459 5; Antarctica; 2012-11; 5th
 978 1 74220 786 5; Argentina; 2014-08; 9th
 978 1 74321 558 6; Pocket Athens; 2016-02; 3rd
@@ -124,6 +125,7 @@
 978 1 74220 749 0; Ireland; 2014-03; 11th
 978 1 74220 748 3; Discover Ireland; 2014-05; 3rd
 978 1 74220 804 6; Israel & the Palestinian Territories; 2015-07; 8th
+978 1 76034 276 0; Israel & the Palestinian Territories; 2015-10; 8th
 978 1 74321 477 0; İstanbul; 2015-02; 8th
 978 1 74321 561 6; Pocket İstanbul; 2015-02; 5th
 978 1 74179 849 4; The Italian Lakes; 2014-01; 2nd
@@ -177,7 +179,7 @@
 978 1 74179 409 0; Munich, Bavaria & the Black Forest; 2013-03; 4th
 978 1 74220 575 5; Myanmar (Burma); 2014-07; 12th
 978 1 74321 551 7; Naples, Pompeii & the Amalfi Coast; 2016-01; 5th
-978 1 74321 007 9; Nepal; 2015-07; 10th
+978 1 74321 007 9; Nepal; 2015-11; 10th
 978 1 74179 272 0; Trekking in the Nepal Himalaya; 2015-12; 10th
 978 1 74179 895 1; The Netherlands; 2013-05; 5th
 978 1 74220 300 3; New England; 2014-03; 7th

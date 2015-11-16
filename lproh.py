@@ -132,23 +132,13 @@ def download_lists():
 def read_complete_list(filename, filename2):
     """
     Reads the (downloaded) same-folder stock lists.
+
+    If ISBN is found in both complete_list and old_list, it is not accepted
+    in complete_list.
     """
     complete_list = []
     old_list = []
-    with open(filename, 'r') as f:
-        for line in f:
-            data = []
-            #line = f.readline()
-            words = line.split(";")
-            #add_isbn = str(words[0][0:2]) + str(words[0][4]) + str(words[0][6:10]) + str(words[0][
-            add_isbn = ''.join(words[0].split())
-            data.append(add_isbn)
-            data.append(words[1][1:])
-            data.append(words[2][1:])
-            data.append(words[3][1:-1])
-            complete_list.append(data)
-    f.closed
-    print 'INFO: Aktuell LP-katalog lest inn.'
+    prohibit_isbn = []
 
     with open(filename2, 'r') as f:
         for line in f:
@@ -156,12 +146,28 @@ def read_complete_list(filename, filename2):
             words = line.split(";")
             add_isbn = ''.join(words[0].split())
             data.append(add_isbn)
+            prohibit_isbn.append(add_isbn)
             data.append(words[1][1:])
             data.append(words[2][1:])
             data.append(words[3][1:-1])
             old_list.append(data)
     f.closed
     print 'INFO: Liste over utdaterte LP-titler lest inn.'
+
+    with open(filename, 'r') as f:
+        for line in f:
+            data = []
+            words = line.split(";")
+            add_isbn = ''.join(words[0].split())
+            if add_isbn not in prohibit_isbn:
+                data.append(add_isbn)
+                data.append(words[1][1:])
+                data.append(words[2][1:])
+                data.append(words[3][1:-1])
+                complete_list.append(data)
+
+    f.closed
+    print 'INFO: Aktuell LP-katalog lest inn.'
 
     return complete_list, old_list
 
@@ -276,7 +282,7 @@ if __name__ == "__main__":
     row_count = sheet.max_row
     column_count = sheet.max_column
 
-    download_lists()
+    #download_lists()
     complete_list, old_list = read_complete_list('complete_list.txt',
                                                  'old_list.txt')
     np_complete_list = np.array(complete_list)
@@ -290,11 +296,14 @@ if __name__ == "__main__":
     for book in A:
         book[2] = int(book[2])
         if book[2] in np_complete_list[:, 0].astype(int):
-            # overwrites report-title with list-title, ok
-            name_index = np.where(np_complete_list[:, 0] == str(book[2]))
-            name_index = name_index[-1][0]
-            book[3] = np_complete_list[name_index][1]
-            detected_good_books.append(book)
+            if book[2] in np_old_list[:, 0].astype(int):
+                detected_old_books.append(book)
+            else:
+                # overwrites report-title with list-title, ok
+                name_index = np.where(np_complete_list[:, 0] == str(book[2]))
+                name_index = name_index[-1][0]
+                book[3] = np_complete_list[name_index][1]
+                detected_good_books.append(book)
         else:
             if str(book[2]) in np_old_list[:, 0]:
                 detected_old_books.append(book)
