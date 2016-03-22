@@ -218,7 +218,14 @@ def show_not_found(A, np_complete_list):
     """
 
     year, month = time.localtime()[0:2]
+    if len(str(month)) != 2:
+        #print 'fuck'
+        #print str(month)
+        month = '0' + str(month)
+        #print str(month)
     year_month = str(year) + '-' + str(month)
+    #print year_month
+    #exit(1)
     cnt_missing = 0
     cnt_notpublishedyet = 0
     t_missing = PrettyTable(['ISBN', 'Navn', 'Publikasjonsdato', 'Utgave'])
@@ -281,6 +288,11 @@ if __name__ == "__main__":
     sheet = wb.active
     row_count = sheet.max_row
     column_count = sheet.max_column
+
+    #test
+    print "TEST"
+    sheet.calculate_dimensions(force=True)
+    exit(1)
 
     #download_lists()
     complete_list, old_list = read_complete_list('complete_list.txt',
