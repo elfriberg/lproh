@@ -16,7 +16,7 @@ import readline
 __author__ = "Even Langfeldt Friberg"
 __copyright__ = "Copyright 2015, Lonely Planet Report Order Helper"
 __license__ = "GPL"
-__version__ = "1.0"
+__version__ = "2.0"
 __maintainer__ = "Even Langfeldt Friberg"
 __email__ = "even@evenezer.me"
 __status__ = "Production"
@@ -275,7 +275,7 @@ if __name__ == "__main__":
 
     read_spreadsheet, row_count = load_spreadsheet()
     #download_lists()
-    complete_list = read_complete_list('testdict')
+    complete_list = read_complete_list('data/completelist')
 
     report_active, report_replaced, report_unknown, processed_isbns = find_active_and_replaced(read_spreadsheet, complete_list)
     report_not_present = find_not_present(complete_list, report_active, report_replaced, processed_isbns)
