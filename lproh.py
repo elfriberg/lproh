@@ -10,6 +10,8 @@ import urllib2
 import os.path
 import sys
 import datetime
+import io, json
+import readline
 
 __author__ = "Even Langfeldt Friberg"
 __copyright__ = "Copyright 2015, Lonely Planet Report Order Helper"
@@ -128,138 +130,119 @@ def download_lists():
     except urllib2.URLError, err:
         print 'ERROR: Du er ikke koblet til Internett.'
 
+def load_json(filename):
+    with io.open('{0}.json'.format(filename), encoding='utf-8') as f: 
+        return f.read()
 
-def read_complete_list(filename, filename2):
+def read_complete_list(filename):
     """
     Reads the (downloaded) same-folder stock lists.
 
     If ISBN is found in both complete_list and old_list, it is not accepted
     in complete_list.
     """
-    complete_list = []
-    old_list = []
-    prohibit_isbn = []
 
-    with open(filename2, 'r') as f:
-        for line in f:
-            data = []
-            words = line.split(";")
-            add_isbn = ''.join(words[0].split())
-            data.append(add_isbn)
-            prohibit_isbn.append(add_isbn)
-            data.append(words[1][1:])
-            data.append(words[2][1:])
-            data.append(words[3][1:-1])
-            old_list.append(data)
-    f.closed
-    print 'INFO: Liste over utdaterte LP-titler lest inn.'
-
-    with open(filename, 'r') as f:
-        for line in f:
-            data = []
-            words = line.split(";")
-            add_isbn = ''.join(words[0].split())
-            if add_isbn not in prohibit_isbn:
-                data.append(add_isbn)
-                data.append(words[1][1:])
-                data.append(words[2][1:])
-                data.append(words[3][1:-1])
-                complete_list.append(data)
-
-    f.closed
+    completefile = load_json(filename)
+    booklist = json.loads(completefile, encoding="utf-8")
+    
     print 'INFO: Aktuell LP-katalog lest inn.'
 
-    return complete_list, old_list
+    return booklist
 
 
-def show_results(detected_old_books, detected_good_books, unknown_from_report):
+def load_spreadsheet():
+    wb = load_workbook(filename=args.infile, use_iterators=True)
+    sheet = wb.active
+    row_count = sheet.max_row
+    column_count = sheet.max_column
+    upperleftcell = 'A3'
+    lowerrightcell = 'K' + str(row_count - 2)
+    read_spreadsheet = np.array([[i.value for i in j] for j in sheet[upperleftcell:
+                                                  lowerrightcell]])
+    return read_spreadsheet, row_count
+
+
+def find_active_and_replaced(read_spreadsheet, complete_list):
+    processed_isbns = []
+    for book in read_spreadsheet:
+        rsbook_isbn = str(book[2])
+        if rsbook_isbn in complete_list:
+            if complete_list[rsbook_isbn]["Status"] == "active":
+                report_active.append(book)
+                processed_isbns.append(rsbook_isbn)
+            elif complete_list[rsbook_isbn]["Status"] == "replaced":
+                report_replaced.append(book)
+                processed_isbns.append(rsbook_isbn)
+        else:
+            processed_isbns.append(rsbook_isbn)
+            report_unknown.append(book)
+        
+    
+    return report_active, report_replaced, report_unknown, processed_isbns
+
+def find_not_present(complete_list, report_active, report_replaced, processed_isbns):
+    for clbook in complete_list:
+        if clbook not in processed_isbns and complete_list[clbook]["Status"] == "active":
+            report_not_present.append(clbook)  
+    return report_not_present
+
+
+def show_tables(report_active, report_replaced, report_unknown, report_not_present, year_month, hide):
     """
-    Prints to stdout outdated titles, current titles and unknown titles found in report.
+    Print tables to screen.
     """
+    
+    # Active titles found
+    print '\nTABELL 1\nFant %s aktuelle bøker fra LP-katalogen nevnt i din rapport:' % len(report_active)
+    t_active = PrettyTable(['ISBN', 'Navn', 'År', 'Salg totalt', 'Beholdning'])
+    for book in report_active:
+        t_active.add_row([book[2], complete_list[book[2]]["Title"], book[5], book[8], book[10]])
+    t_active.sortby = 'Beholdning'
+    print t_active
 
-    print '\nTABELL 1\nFant %s utdaterte (erstattet av ny) LP-titler i din rapport:' % len(
-        detected_old_books)
-    print '(Dette programmet baserer seg på old_list.txt; du bør også sjekke siste Tabell 3 der\ntitler i rapport uten treff i lister presenteres.)'
-    t = PrettyTable(['ISBN', 'Navn', 'Innbinding', 'År', 'Salg totalt',
-                     'Beholdning'])
-    for b in detected_old_books:
-        t.add_row([b[2], b[3], b[4], b[5], b[8], b[10]])
-    print t
+    # Active titles missing
+    print '\nTABELL 2\nDin rapport mangler %s aktuelle bøker fra LP-katalogen:' % len(report_not_present)
+    t_not_present = PrettyTable(['ISBN', 'Navn', 'Publikasjonsdato', 'Utgave', 'Kommentar'])
+    for book in report_not_present:
+        bookdate = time.strptime(complete_list[book]["DatePublished"], "%Y-%m")
+        now = time.strptime(year_month, "%Y-%m")
+        if bookdate > now:
+            comment = "N.Y.P."
+        else:
+            comment = ""
+        t_not_present.add_row([book, complete_list[book]["Title"], complete_list[book]["DatePublished"], complete_list[book]["Edition"], comment])
+    t_not_present.sortby = "Publikasjonsdato"
+    print t_not_present
 
-    print '\nTABELL 2\nFant %s aktuelle bøker fra LP-katalogen nevnt i din rapport:' % len(
-        detected_good_books)
-    print '(Disse er sortert på beholdning (økende) slik at de øverste normalt er viktigst å bestille.)'
-    t_good = PrettyTable(['ISBN', 'Navn', 'Innbinding', 'År', 'Salg totalt',
-                          'Beholdning'])
-    for b in detected_good_books:
-        t_good.add_row([b[2], b[3], b[4], b[5], b[8], b[10]])
-    t_good.sortby = 'Beholdning'
-    print t_good
+    # Replaced titles found
+    print '\nTABELL 3\nFant %s utdaterte (erstattet av ny) LP-titler i din rapport:' % len(report_replaced)
+    t_replaced = PrettyTable(['ISBN', 'Navn', 'År', 'Salg totalt', 'Beholdning'])
+    for book in report_replaced:
+        t_replaced.add_row([book[2], complete_list[book[2]]["Title"], book[5], book[8], book[10]])
+    t_replaced.sortby = "Beholdning"
+    print t_replaced
 
-    print '\nTABELL 3\nFant %s bøker i din rapport som programmet ikke finner i innlastede godkjent/forbudt-lister:' % len(
-        unknown_from_report)
-    print '(Disse er typisk ikke-LP-titler og utdaterte LP-titler som gikk OUP før 2015-09.)'
-    t_unknown = PrettyTable(['ISBN', 'Navn', 'Innbinding', 'År', 'Salg totalt',
-                             'Beholdning'])
-    for unknown in unknown_from_report:
-        t_unknown.add_row([unknown[2], unknown[3], unknown[4], unknown[5],
-                           unknown[8], unknown[10]])
-    t_unknown.sortby = 'Beholdning'
-    print t_unknown
+    # Unknown titles found
+    if hide == False:
+        print '\nTABELL 4\nFant %s ukjente titler i din rapport:' % len(report_unknown)
+        t_unknown = PrettyTable(['ISBN', 'Navn', 'År', 'Salg totalt',
+                                 'Beholdning'])
+        for unknown in report_unknown:
+            t_unknown.add_row([unknown[2], unknown[3], unknown[5],
+                               unknown[8], unknown[10]])
+        t_unknown.sortby = 'Beholdning'
+        print t_unknown
 
-    qa_number = len(detected_old_books) + len(detected_good_books) + len(
-        unknown_from_report)
+    qa_number = len(report_active) + len(report_replaced) + len(report_unknown)
     return qa_number
 
 
-def show_not_found(A, np_complete_list):
-    """
-    Prints to stdout titles from current list and not-yet-published titles not found in report.
-    """
-
+def calculate_date():
     year, month = time.localtime()[0:2]
     if len(str(month)) != 2:
-        #print 'fuck'
-        #print str(month)
         month = '0' + str(month)
-        #print str(month)
     year_month = str(year) + '-' + str(month)
-    #print year_month
-    #exit(1)
-    cnt_missing = 0
-    cnt_notpublishedyet = 0
-    t_missing = PrettyTable(['ISBN', 'Navn', 'Publikasjonsdato', 'Utgave'])
-    t_notpublishedyet = PrettyTable(['ISBN', 'Navn', 'Publikasjonsdato',
-                                     'Utgave'])
-    A_isbns = []
-    for book in A:
-        book[2] = int(book[2])
-        A_isbns.append(book[2])
-    no_titles_complete = np_complete_list.shape[0]
-    for i in xrange(no_titles_complete):
-        if int(np_complete_list[i][0]) not in A_isbns:
-            if year_month >= str(np_complete_list[i][2]):
-                t_missing.add_row(
-                    [np_complete_list[i][0], np_complete_list[i][1],
-                     np_complete_list[i][2], np_complete_list[i][3]])
-                cnt_missing += 1
-                #print np_complete_list[i][0]
-            else:
-                t_notpublishedyet.add_row(
-                    [np_complete_list[i][0], np_complete_list[i][1],
-                     np_complete_list[i][2], np_complete_list[i][3]])
-                cnt_notpublishedyet += 1
-    print '\nTABELL 4\nFant %s aktuelle bøker fra LP-katalogen som mangler i din rapport:' % cnt_missing
-    print '(Du bør slå opp deres ISBN manuelt for å sjekke deres antall i beholdning, evt. generere en'
-    print 'rapport som går lenger tilbake i tid. Du mangler trolig enkelte av disse titlene.)'
-    t_missing.sortby = 'Publikasjonsdato'
-    print t_missing
-    print '\nTABELL 5\nFant %s bøker fra LP-katalogen som ikke er publisert ennå [as of %s], og som mangler i din rapport:' % (
-        cnt_notpublishedyet, year_month)
-    print '(Du bør slå opp deres ISBN manuelt for å sjekke om du har bestilt disse.)'
-    t_notpublishedyet.sortby = 'Publikasjonsdato'
-    print t_notpublishedyet
-
+    return year_month
 
 if __name__ == "__main__":
 
@@ -276,56 +259,28 @@ if __name__ == "__main__":
                         action='store_true',
                         help='Turn on verbose mode.')
 
+    parser.add_argument('-hide',
+                        '--hide',
+                        action='store_true',
+                        help='Hide unknown titles.')
+
     args = parser.parse_args()
 
-    old_books = [9781741798227]
-    permitted_lp_books = [9781742200347]
-    detected_old_books = []
-    detected_good_books = []
-    not_in_report = []
-    unknown_from_report = []
+    report_active = []
+    report_replaced = []
+    report_not_present = []
+    report_unknown = []
 
-    wb = load_workbook(filename=args.infile, use_iterators=True)
-    sheet = wb.active
-    row_count = sheet.max_row
-    column_count = sheet.max_column
+    year_month = calculate_date()
 
-    #test
-    ##print "TEST"
-    #sheet.calculate_dimensions(force=True)
-    #exit(1)
-
+    read_spreadsheet, row_count = load_spreadsheet()
     #download_lists()
-    complete_list, old_list = read_complete_list('complete_list.txt',
-                                                 'old_list.txt')
-    np_complete_list = np.array(complete_list)
-    np_old_list = np.array(old_list)
+    complete_list = read_complete_list('testdict')
 
-    upperleftcell = 'A3'
-    lowerrightcell = 'K' + str(row_count - 2)
-    A = np.array([[i.value for i in j] for j in sheet[upperleftcell:
-                                                      lowerrightcell]])
+    report_active, report_replaced, report_unknown, processed_isbns = find_active_and_replaced(read_spreadsheet, complete_list)
+    report_not_present = find_not_present(complete_list, report_active, report_replaced, processed_isbns)
 
-    for book in A:
-        book[2] = int(book[2])
-        if book[2] in np_complete_list[:, 0].astype(int):
-            if book[2] in np_old_list[:, 0].astype(int):
-                detected_old_books.append(book)
-            else:
-                # overwrites report-title with list-title, ok
-                name_index = np.where(np_complete_list[:, 0] == str(book[2]))
-                name_index = name_index[-1][0]
-                book[3] = np_complete_list[name_index][1]
-                detected_good_books.append(book)
-        else:
-            if str(book[2]) in np_old_list[:, 0]:
-                detected_old_books.append(book)
-            else:
-                unknown_from_report.append(book)
-
-    qa_number = show_results(detected_old_books, detected_good_books,
-                             unknown_from_report)
-    show_not_found(A, np_complete_list)
+    qa_number = show_tables(report_active, report_replaced, report_unknown, report_not_present, year_month, args.hide)
 
     if int(qa_number) == int(row_count - 4):
         print 'INFO: Alle %s titler i din rapport ble klassifisert og plassert i en tabell.' % str(
