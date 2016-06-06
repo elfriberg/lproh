@@ -243,6 +243,7 @@ def show_not_found(A, np_complete_list):
                     [np_complete_list[i][0], np_complete_list[i][1],
                      np_complete_list[i][2], np_complete_list[i][3]])
                 cnt_missing += 1
+                #print np_complete_list[i][0]
             else:
                 t_notpublishedyet.add_row(
                     [np_complete_list[i][0], np_complete_list[i][1],
@@ -290,9 +291,9 @@ if __name__ == "__main__":
     column_count = sheet.max_column
 
     #test
-    print "TEST"
-    sheet.calculate_dimensions(force=True)
-    exit(1)
+    ##print "TEST"
+    #sheet.calculate_dimensions(force=True)
+    #exit(1)
 
     #download_lists()
     complete_list, old_list = read_complete_list('complete_list.txt',
